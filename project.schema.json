@@ -1,0 +1,254 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://your-org.com/schemas/project.schema.json",
+  "title": "project.yml",
+  "description": "Unified project manifest schema for workspaces, services, libraries, frontends and infrastructure.",
+  "type": "object",
+  "required": ["version", "name", "kind"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version.",
+      "pattern": "^\\d+\\.\\d+$",
+      "examples": ["1.0"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Unique project name within the workspace.",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "description": "The type of project.",
+      "enum": ["workspace", "service", "library", "frontend", "infrastructure"]
+    },
+    "description": {
+      "type": "string",
+      "description": "One-line description of the project's purpose."
+    },
+    "repo": {
+      "type": "string",
+      "description": "Git clone URL.",
+      "pattern": "^(https://|git@).+"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form labels for filtering and discovery.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "projects": {
+      "type": "array",
+      "description": "Child projects contained by this workspace.",
+      "items": { "$ref": "#/$defs/projectRef" }
+    },
+    "depends_on": {
+      "type": "array",
+      "description": "Everything this project needs to function: services, libraries, databases, caches, queues, external APIs.",
+      "items": { "$ref": "#/$defs/dependency" }
+    },
+    "runtime": { "$ref": "#/$defs/runtime" },
+    "environments": {
+      "type": "array",
+      "description": "How to reach this project per environment.",
+      "items": { "$ref": "#/$defs/environment" }
+    },
+    "codeowners": {
+      "type": "array",
+      "description": "People responsible for this project.",
+      "items": { "$ref": "#/$defs/codeowner" }
+    }
+  },
+
+  "$defs": {
+
+    "projectRef": {
+      "type": "object",
+      "description": "A reference to a child project inside a workspace.",
+      "required": ["name", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path to the project's directory."
+        },
+        "repo": {
+          "type": "string",
+          "description": "Fallback clone URL if the path is not present locally.",
+          "pattern": "^(https://|git@).+"
+        }
+      }
+    },
+
+    "dependency": {
+      "type": "object",
+      "description": "A single dependency — another service, a library, or an infrastructure resource.",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path to the project's directory. Used for service and library dependencies."
+        },
+        "repo": {
+          "type": "string",
+          "description": "Fallback clone URL.",
+          "pattern": "^(https://|git@).+"
+        },
+        "protocol": {
+          "type": "string",
+          "description": "How this project communicates with the dependency.",
+          "enum": ["grpc", "https", "amqp", "library"]
+        },
+        "runtime": { "$ref": "#/$defs/runtime" },
+        "environments": {
+          "type": "array",
+          "description": "How to reach or connect to this dependency per environment.",
+          "items": { "$ref": "#/$defs/environment" }
+        }
+      }
+    },
+
+    "runtime": {
+      "type": "object",
+      "description": "How to build and run this project or dependency.",
+      "required": ["compose_service", "commands"],
+      "additionalProperties": false,
+      "properties": {
+        "dockerfile": {
+          "type": "string",
+          "description": "Relative path to the Dockerfile."
+        },
+        "compose_service": {
+          "type": "string",
+          "description": "Service name as it appears in docker-compose."
+        },
+        "port": {
+          "type": "integer",
+          "description": "Port exposed by the service.",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "health_check": {
+          "type": "string",
+          "description": "URL to poll to confirm the service is healthy."
+        },
+        "commands": {
+          "type": "array",
+          "description": "Named runnable commands for this project or dependency.",
+          "items": { "$ref": "#/$defs/command" },
+          "minItems": 1
+        }
+      }
+    },
+
+    "command": {
+      "type": "object",
+      "description": "A named runnable command.",
+      "required": ["name", "script"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Command identifier, e.g. start, stop, test, lint, build.",
+          "minLength": 1
+        },
+        "script": {
+          "type": "string",
+          "description": "The shell command to execute.",
+          "minLength": 1
+        }
+      }
+    },
+
+    "environment": {
+      "type": "object",
+      "description": "A deployment environment or connection target.",
+      "required": ["type", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The class of environment.",
+          "enum": ["local", "review", "production"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Unique qualifier within a type, e.g. prod-us-east.",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "description": "Base URL for services, or connection string for infrastructure."
+        },
+        "description": {
+          "type": "string",
+          "description": "Notes, warnings, or deployment instructions for this environment."
+        },
+        "variables": {
+          "type": "object",
+          "description": "Map of environment variable names to their values, Vault paths, or .env references.",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "codeowner": {
+      "type": "object",
+      "description": "A person or team responsible for this project.",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "team": {
+          "type": "string",
+          "description": "GitHub team or organisational group, e.g. @acme/platform."
+        },
+        "role": {
+          "type": "string",
+          "description": "The person's role on this project, e.g. Tech Lead."
+        },
+        "links": {
+          "type": "array",
+          "description": "Ways to reach this person or team.",
+          "items": { "$ref": "#/$defs/link" }
+        }
+      }
+    },
+
+    "link": {
+      "type": "object",
+      "description": "A typed contact or profile link.",
+      "required": ["type", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Platform or channel type. Open-ended: github | slack | email | pagerduty | linear | jira | ...",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "description": "The handle, URL, email address, or identifier.",
+          "minLength": 1
+        }
+      }
+    }
+
+  }
+}
