@@ -1,0 +1,10 @@
+{
+  "yaml.schemas": {
+    "./project-topology/assets/schema-v1.0.0.json": [
+      "project.yaml",
+      "project.yml",
+      "**/project.yaml",
+      "**/project.yml"
+    ]
+  }
+}

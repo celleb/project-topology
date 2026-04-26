@@ -17,7 +17,6 @@ Engineers working across multi-repo / multi-service platforms waste time managin
 
 ## Files
 
-
 | File                                         | Purpose                                                                   |
 | -------------------------------------------- | ------------------------------------------------------------------------- |
 | `project-topology/assets/schema-v1.0.0.json` | JSON Schema (draft-07) validator for `project.yaml`                       |
@@ -25,7 +24,6 @@ Engineers working across multi-repo / multi-service platforms waste time managin
 | `project-topology/guides/generate.md`        | Step-by-step guide for generating `project.yaml` from an existing project |
 | `project-topology/scripts/validate.js`       | Script to validate a `project.yaml` against the schema                    |
 | `project.yaml`                               | Full example `project.yaml` for a service                                 |
-
 
 ## Quick Start
 
@@ -85,14 +83,12 @@ cp -r project-topology/ .agents/skills/project-topology/
 
 Most agents also support user-level skills directories if you prefer to install it globally:
 
-
 | Agent              | User-level skills directory |
 | ------------------ | --------------------------- |
 | Cursor             | `.cursor/skills/`           |
 | Claude Code        | `.claude/skills/`           |
 | Gemini CLI         | `.gemini/skills/`           |
 | Visual Studio Code | `.github/skills/`           |
-
 
 Refer to your agent's documentation for the exact path if it isn't listed above.
 
@@ -111,6 +107,35 @@ The full JSON Schema is at `[project-topology/assets/schema-v1.0.0.json](./proje
 
 ## Validating a `project.yaml`
 
+### VS Code
+
+Install the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) [![YAML](https://img.shields.io/badge/VS%20Code-YAML%20extension-blue?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) to get inline validation, autocomplete, and hover docs for every `project.yaml` in your workspace.
+
+Once the skill is installed at `.agents/skills/project-topology/`, add this to your `.vscode/settings.json`:
+
+```json
+{
+  "yaml.schemas": {
+    "./.agents/skills/project-topology/assets/schema-v1.0.0.json": [
+      "project.yaml",
+      "project.yml",
+      "**/project.yaml",
+      "**/project.yml"
+    ]
+  }
+}
+```
+
+This repository already includes this config in [`.vscode/settings.json`](./.vscode/settings.json) and recommends the extension via [`.vscode/extensions.json`](./.vscode/extensions.json).
+
+Alternatively, add a comment at the top of any `project.yaml` to enable validation in any workspace without settings:
+
+```yaml
+# yaml-language-server: $schema=./.agents/skills/project-topology/assets/schema-v1.0.0.json
+```
+
+### CLI
+
 Run the bundled script against any `project.yaml`:
 
 ```bash
@@ -127,23 +152,21 @@ Requires Node.js and project dependencies (`npm install`).
 
 ## `project.yaml` Field Reference
 
+| Field          | Required | Description                                |
+| -------------- | -------- | ------------------------------------------ | ------- | ------- | -------- | --------------- |
+| `version`      | yes      | Schema version, e.g. `"1.0"`               |
+| `name`         | yes      | Unique project name within the workspace   |
+| `kind`         | yes      | `workspace                                 | service | library | frontend | infrastructure` |
+| `description`  | no       | One-line description                       |
+| `repo`         | no       | Git clone URL                              |
+| `tags`         | no       | Free-form labels                           |
+| `projects`     | no       | Child projects (workspace only)            |
+| `depends_on`   | no       | Dependencies (services, DBs, queues, etc.) |
+| `runtime`      | no       | How to build and run the project           |
+| `environments` | no       | Per-environment URLs and variables         |
+| `codeowners`   | no       | People responsible for the project         |
 
-| Field          | Required | Description                                                 |
-| -------------- | -------- | ----------------------------------------------------------- |
-| `version`      | yes      | Schema version, e.g. `"1.0"`                                |
-| `name`         | yes      | Unique project name within the workspace                    |
-| `kind`         | yes      | `workspace | service | library | frontend | infrastructure` |
-| `description`  | no       | One-line description                                        |
-| `repo`         | no       | Git clone URL                                               |
-| `tags`         | no       | Free-form labels                                            |
-| `projects`     | no       | Child projects (workspace only)                             |
-| `depends_on`   | no       | Dependencies (services, DBs, queues, etc.)                  |
-| `runtime`      | no       | How to build and run the project                            |
-| `environments` | no       | Per-environment URLs and variables                          |
-| `codeowners`   | no       | People responsible for the project                          |
-
-
-See `[project-topology/assets/schema-v1.0.0.json](./project-topology/assets/schema-v1.0.0.json)` for the full field definitions.
+See [project-topology/assets/schema-v1.0.0.json](project-topology/assets/schema-v1.0.0.json) for the full field definitions.
 
 ## License
 
