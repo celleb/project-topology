@@ -2,9 +2,11 @@ name: Deploy schema to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - project-topology/assets/**
+      - .github/workflows/deploy-schema.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
