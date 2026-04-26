@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths:
       - project-topology/assets/**
+      - README.md
       - .github/workflows/deploy-schema.yml
   workflow_dispatch:
 
@@ -19,15 +20,45 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Build site
+        run: |
+          mkdir -p _site
+          cp project-topology/assets/* _site/
+
+          cat <<'EOF' > _site/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Project Topology</title>
+            <link
+              rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css"
+            />
+            <style>
+              body { box-sizing: border-box; min-width: 200px; max-width: 900px; margin: 0 auto; padding: 2rem; }
+            </style>
+          </head>
+          <body class="markdown-body">
+          EOF
+
+          npx --yes marked README.md --gfm >> _site/index.html
+
+          echo '</body></html>' >> _site/index.html
+
       - uses: actions/configure-pages@v4
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: project-topology/assets
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          path: _site
+
+      - uses: actions/deploy-pages@v4
