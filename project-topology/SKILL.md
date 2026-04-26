@@ -4,7 +4,7 @@ description: "Reads project.yaml or project.yml manifests to understand a projec
 license: MIT
 metadata:
   version: "1.0"
-compatibility: Requires a project.yaml or project.yml file at the workspace root (or child project roots). Any agent that can read files and YAML.
+compatibility: Project-level skill. Install in .agents/skills/project-topology/ at the repository root. Requires a project.yaml or project.yml at the project root (or child project roots). Any agent that can read files and YAML.
 ---
 
 # Project Topology

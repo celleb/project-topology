@@ -8,15 +8,15 @@ Engineers working across multi-repo / multi-service platforms waste time managin
 
 ## The Solution
 
-**`project.yaml`** — a lightweight manifest that every project (workspace, service, library, frontend, or infrastructure) carries at its root. A single AI agent reading these files can:
+`**project.yaml**` — a lightweight manifest that every project (workspace, service, library, frontend, or infrastructure) carries at its root. It is the first place an AI agent should look before carrying out tasks across a multi-service platform. From a single file an agent can:
 
-- Discover how services depend on each other
-- Know the protocol between them (`grpc`, `https`, `amqp`, `library`)
-- Find environment URLs for local, review, and production
-- Run any service using well-known named commands
-- Identify code owners and their contact links
+- Understand how services depend on each other and what protocols they use
+- Start, test, or build any service using declared commands
+- Resolve environment URLs for local, review, and production
+- Identify code owners and contact details
 
 ## Files
+
 
 | File                                         | Purpose                                                                   |
 | -------------------------------------------- | ------------------------------------------------------------------------- |
@@ -25,6 +25,7 @@ Engineers working across multi-repo / multi-service platforms waste time managin
 | `project-topology/guides/generate.md`        | Step-by-step guide for generating `project.yaml` from an existing project |
 | `project-topology/scripts/validate.js`       | Script to validate a `project.yaml` against the schema                    |
 | `project.yaml`                               | Full example `project.yaml` for a service                                 |
+
 
 ## Quick Start
 
@@ -76,17 +77,30 @@ codeowners:
 
 ### 2. Install the skill
 
-Copy the `project-topology/` directory into your `.cursor/skills/` directory:
+`project-topology/` is an [Agent Skills](https://agentskills.io)-compatible skill. Install it at the project level by copying it into `.agents/skills/` at your repository root:
 
 ```bash
-cp -r project-topology/ ~/.cursor/skills/project-topology/
+cp -r project-topology/ .agents/skills/project-topology/
 ```
 
-The skill triggers automatically when you ask about service relationships, environment URLs, how to run something, or who owns a project.
+Most agents also support user-level skills directories if you prefer to install it globally:
+
+
+| Agent              | User-level skills directory |
+| ------------------ | --------------------------- |
+| Cursor             | `.cursor/skills/`           |
+| Claude Code        | `.claude/skills/`           |
+| Gemini CLI         | `.gemini/skills/`           |
+| Visual Studio Code | `.github/skills/`           |
+
+
+Refer to your agent's documentation for the exact path if it isn't listed above.
+
+The skill activates automatically when working on tasks that involve running or debugging services, tracing dependencies, resolving environment URLs, or understanding who owns a project. It uses `project.yaml` as the first point of reference before falling back to other sources like `docker-compose.yml`, `package.json`, or source code.
 
 ## Schema
 
-The full JSON Schema is at [`project-topology/assets/schema-v1.0.0.json`](./project-topology/assets/schema-v1.0.0.json). It enforces:
+The full JSON Schema is at `[project-topology/assets/schema-v1.0.0.json](./project-topology/assets/schema-v1.0.0.json)`. It enforces:
 
 - `version`, `name`, `kind` required on every project
 - `kind` is a closed enum: `workspace | service | library | frontend | infrastructure`
@@ -113,21 +127,23 @@ Requires Node.js and project dependencies (`npm install`).
 
 ## `project.yaml` Field Reference
 
-| Field          | Required | Description                                                     |
-| -------------- | -------- | --------------------------------------------------------------- |
-| `version`      | yes      | Schema version, e.g. `"1.0"`                                    |
-| `name`         | yes      | Unique project name within the workspace                        |
-| `kind`         | yes      | `workspace \| service \| library \| frontend \| infrastructure` |
-| `description`  | no       | One-line description                                            |
-| `repo`         | no       | Git clone URL                                                   |
-| `tags`         | no       | Free-form labels                                                |
-| `projects`     | no       | Child projects (workspace only)                                 |
-| `depends_on`   | no       | Dependencies (services, DBs, queues, etc.)                      |
-| `runtime`      | no       | How to build and run the project                                |
-| `environments` | no       | Per-environment URLs and variables                              |
-| `codeowners`   | no       | People responsible for the project                              |
 
-See [`project-topology/assets/schema-v1.0.0.json`](./project-topology/assets/schema-v1.0.0.json) for the full field definitions.
+| Field          | Required | Description                                                 |
+| -------------- | -------- | ----------------------------------------------------------- |
+| `version`      | yes      | Schema version, e.g. `"1.0"`                                |
+| `name`         | yes      | Unique project name within the workspace                    |
+| `kind`         | yes      | `workspace | service | library | frontend | infrastructure` |
+| `description`  | no       | One-line description                                        |
+| `repo`         | no       | Git clone URL                                               |
+| `tags`         | no       | Free-form labels                                            |
+| `projects`     | no       | Child projects (workspace only)                             |
+| `depends_on`   | no       | Dependencies (services, DBs, queues, etc.)                  |
+| `runtime`      | no       | How to build and run the project                            |
+| `environments` | no       | Per-environment URLs and variables                          |
+| `codeowners`   | no       | People responsible for the project                          |
+
+
+See `[project-topology/assets/schema-v1.0.0.json](./project-topology/assets/schema-v1.0.0.json)` for the full field definitions.
 
 ## License
 
