@@ -1,0 +1,78 @@
+version: "1.0"
+name: auth-service
+kind: service
+description: Handles user authentication and session management
+repo: https://github.com/acme/auth-service
+tags:
+  - auth
+  - core
+
+runtime:
+  compose_service: auth-service
+  port: 3001
+  health_check: http://localhost:3001/health
+  commands:
+    - name: dev
+      script: docker compose up auth-service
+    - name: test
+      script: docker compose run --rm auth-service npm test
+    - name: lint
+      script: docker compose run --rm auth-service npm run lint
+    - name: build
+      script: docker compose run --rm auth-service npm run build
+
+environments:
+  - type: local
+    name: local
+    url: http://localhost:3001
+    variables:
+      JWT_SECRET: dev-secret-change-me
+      TOKEN_TTL: "3600"
+  - type: review
+    name: staging
+    url: https://auth.staging.acme.com
+  - type: production
+    name: prod
+    url: https://auth.acme.com
+
+depends_on:
+  - name: postgres
+    protocol: https
+    runtime:
+      compose_service: postgres
+      port: 5432
+      commands:
+        - name: start
+          script: docker compose up postgres
+    environments:
+      - type: local
+        name: local
+        url: postgres://localhost:5432/auth
+  - name: redis
+    protocol: https
+    runtime:
+      compose_service: redis
+      port: 6379
+      commands:
+        - name: start
+          script: docker compose up redis
+    environments:
+      - type: local
+        name: local
+        url: redis://localhost:6379
+
+codeowners:
+  - name: Jon Manga
+    role: Tech Lead
+    links:
+      - type: github
+        value: celleb
+      - type: slack
+        value: "@jonmanga"
+  - name: Platform Team
+    team: "@acme/platform"
+    links:
+      - type: slack
+        value: "#platform"
+      - type: pagerduty
+        value: platform-oncall

@@ -1,0 +1,14 @@
+{
+  "name": "project-topology",
+  "version": "1.0.0",
+  "description": "Convention and tooling spec for specifying a project's topology",
+  "type": "module",
+  "scripts": {
+    "validate": "node project-topology/scripts/validate.js",
+    "test": "node project-topology/scripts/validate.js project.yaml"
+  },
+  "dependencies": {
+    "ajv": "^8",
+    "js-yaml": "^4"
+  }
+}
