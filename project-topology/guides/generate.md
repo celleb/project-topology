@@ -2,14 +2,22 @@
 
 Inspect the project's existing files to infer fields. Populate only what you can verify — do not guess or invent values.
 
+## Step 1: Include the schema
+
+Add the following comment to the first line of project.yaml
+
+```yaml
+# yaml-language-server: $schema=https://celleb.github.io/project-topology/schema-v1.0.0.json
+```
+
 ## Step 1: Determine `kind`
 
-| If the project has… | Set `kind` to… |
-|---|---|
-| No source code, lists other repos | `workspace` |
-| A backend API or server | `service` |
-| A React / Vue / Angular / Next.js app | `frontend` |
-| An npm / pip / gem / Go module | `library` |
+| If the project has…                       | Set `kind` to…   |
+| ----------------------------------------- | ---------------- |
+| No source code, lists other repos         | `workspace`      |
+| A backend API or server                   | `service`        |
+| A React / Vue / Angular / Next.js app     | `frontend`       |
+| An npm / pip / gem / Go module            | `library`        |
 | Terraform / CDK / CloudFormation / Pulumi | `infrastructure` |
 
 ## Step 2: Gather basic fields
@@ -31,13 +39,13 @@ Check `docker-compose.yml` or `compose.yml`:
 
 Map well-known `package.json` scripts to `runtime.commands`:
 
-| script name | command `name` | example `script` |
-|---|---|---|
-| `dev` / `start:dev` | `dev` | `docker compose up <service>` |
-| `start` | `start` | `docker compose up <service>` |
-| `test` | `test` | `docker compose run --rm <service> npm test` |
-| `build` | `build` | `docker compose run --rm <service> npm run build` |
-| `lint` | `lint` | `docker compose run --rm <service> npm run lint` |
+| script name         | command `name` | example `script`                                  |
+| ------------------- | -------------- | ------------------------------------------------- |
+| `dev` / `start:dev` | `dev`          | `docker compose up <service>`                     |
+| `start`             | `start`        | `docker compose up <service>`                     |
+| `test`              | `test`         | `docker compose run --rm <service> npm test`      |
+| `build`             | `build`        | `docker compose run --rm <service> npm run build` |
+| `lint`              | `lint`         | `docker compose run --rm <service> npm run lint`  |
 
 ## Step 4: Infer `environments`
 
@@ -55,12 +63,12 @@ Check `docker-compose.yml` → `services.<name>.depends_on` for direct service d
 
 For each dependency, set `protocol` based on what it is:
 
-| Dependency type | `protocol` |
-|---|---|
-| HTTP / REST API | `https` |
-| gRPC service | `grpc` |
-| RabbitMQ / Kafka / SQS | `amqp` |
-| npm / pip / gem package | `library` |
+| Dependency type         | `protocol` |
+| ----------------------- | ---------- |
+| HTTP / REST API         | `https`    |
+| gRPC service            | `grpc`     |
+| RabbitMQ / Kafka / SQS  | `amqp`     |
+| npm / pip / gem package | `library`  |
 
 Include an inline `runtime` block only if you can find the compose service details. Include `environments` only if you can find actual URLs.
 
