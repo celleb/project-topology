@@ -158,19 +158,19 @@ Requires Node.js and project dependencies (`npm install`).
 
 ## `project.yaml` Field Reference
 
-| Field          | Required | Description                                |
-| -------------- | -------- | ------------------------------------------ | ------- | ------- | -------- | --------------- |
-| `version`      | yes      | Schema version, e.g. `"1.0"`               |
-| `name`         | yes      | Unique project name within the workspace   |
-| `kind`         | yes      | `workspace                                 | service | library | frontend | infrastructure` |
-| `description`  | no       | One-line description                       |
-| `repo`         | no       | Git clone URL                              |
-| `tags`         | no       | Free-form labels                           |
-| `projects`     | no       | Child projects (workspace only)            |
-| `depends_on`   | no       | Dependencies (services, DBs, queues, etc.) |
-| `runtime`      | no       | How to build and run the project           |
-| `environments` | no       | Per-environment URLs and variables         |
-| `codeowners`   | no       | People responsible for the project         |
+| Field          | Required | Description                                                     |
+| -------------- | -------- | --------------------------------------------------------------- |
+| `version`      | yes      | Schema version, e.g. `"1.0"`                                    |
+| `name`         | yes      | Unique project name within the workspace                        |
+| `kind`         | yes      | `workspace \| service \| library \| frontend \| infrastructure` |
+| `description`  | no       | One-line description                                            |
+| `repo`         | no       | Git clone URL                                                   |
+| `tags`         | no       | Free-form labels                                                |
+| `projects`     | no       | Child projects (workspace only)                                 |
+| `depends_on`   | no       | Dependencies (services, DBs, queues, etc.)                      |
+| `runtime`      | no       | How to build and run the project                                |
+| `environments` | no       | Per-environment URLs and variables                              |
+| `codeowners`   | no       | People responsible for the project                              |
 
 See [project-topology/assets/schema-v1.0.0.json](project-topology/assets/schema-v1.0.0.json) for the full field definitions.
 
