@@ -96,7 +96,13 @@ The skill activates automatically when working on tasks that involve running or 
 
 ## Schema
 
-The full JSON Schema is at `[project-topology/assets/schema-v1.0.0.json](./project-topology/assets/schema-v1.0.0.json)`. It enforces:
+The schema is published at:
+
+```
+https://celleb.github.io/project-topology/schema-v1.0.0.json
+```
+
+The source is at [`project-topology/assets/schema-v1.0.0.json`](./project-topology/assets/schema-v1.0.0.json). It enforces:
 
 - `version`, `name`, `kind` required on every project
 - `kind` is a closed enum: `workspace | service | library | frontend | infrastructure`
@@ -131,7 +137,7 @@ This repository already includes this config in [`.vscode/settings.json`](./.vsc
 Alternatively, add a comment at the top of any `project.yaml` to enable validation in any workspace without settings:
 
 ```yaml
-# yaml-language-server: $schema=./.agents/skills/project-topology/assets/schema-v1.0.0.json
+# yaml-language-server: $schema=https://celleb.github.io/project-topology/schema-v1.0.0.json
 ```
 
 ### CLI
