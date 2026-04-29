@@ -75,20 +75,36 @@ codeowners:
 
 ### 2. Install the skill
 
-`project-topology/` is an [Agent Skills](https://agentskills.io)-compatible skill. Install it at the project level by copying it into `.agents/skills/` at your repository root:
+`project-topology/` is an [Agent Skills](https://agentskills.io)-compatible skill that works with any supporting agent.
+
+#### Using [skills.sh](https://skills.sh) (recommended)
+
+```bash
+npx skills add celleb/project-topology
+```
+
+Installs to `.agents/skills/` in your project by default. Add `-g` to install globally across all projects:
+
+```bash
+npx skills add celleb/project-topology -g
+```
+
+#### Manual install
+
+Copy the `project-topology/` directory into `.agents/skills/` at your repository root:
 
 ```bash
 cp -r project-topology/ .agents/skills/project-topology/
 ```
 
-Most agents also support user-level skills directories if you prefer to install it globally:
+Most agents also support a global skills directory:
 
-| Agent              | User-level skills directory |
-| ------------------ | --------------------------- |
-| Cursor             | `.cursor/skills/`           |
-| Claude Code        | `.claude/skills/`           |
-| Gemini CLI         | `.gemini/skills/`           |
-| Visual Studio Code | `.github/skills/`           |
+| Agent | Global skills directory |
+|---|---|
+| Cursor | `~/.cursor/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Gemini CLI | `~/.gemini/skills/` |
+| OpenCode / Amp | `~/.config/agents/skills/` |
 
 Refer to your agent's documentation for the exact path if it isn't listed above.
 
